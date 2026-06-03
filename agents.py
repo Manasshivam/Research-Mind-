@@ -1,4 +1,4 @@
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_openai import ChatOpenAI
 from langgraph.prebuilt import create_react_agent
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
@@ -20,9 +20,10 @@ except ImportError:
 if not google_key:
     raise ValueError("GOOGLE_API_KEY is completely missing! Please check Streamlit Secrets.")
 
-llm = ChatGoogleGenerativeAI(
+llm = ChatOpenAI(
     model="gemini-1.5-flash",
-    google_api_key=google_key,
+    api_key=google_key,
+    base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
     temperature=0
 )
 
