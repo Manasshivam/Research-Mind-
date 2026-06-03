@@ -1,5 +1,4 @@
 from langchain_openai import ChatOpenAI
-from langchain_groq import ChatGroq
 from langgraph.prebuilt import create_react_agent
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
@@ -21,9 +20,10 @@ except ImportError:
     pass
 
 if groq_key:
-    llm = ChatGroq(
+    llm = ChatOpenAI(
         model="llama3-8b-8192",
         api_key=groq_key,
+        base_url="https://api.groq.com/openai/v1",
         temperature=0
     )
 elif google_key and google_key.startswith("AIza"):
