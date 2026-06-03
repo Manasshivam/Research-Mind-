@@ -1,4 +1,5 @@
 from langchain_openai import ChatOpenAI
+from langchain_groq import ChatGroq
 from langgraph.prebuilt import create_react_agent
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
@@ -10,22 +11,32 @@ load_dotenv()
 
 # Read API key safely from Streamlit Secrets or Environment
 google_key = os.environ.get("GOOGLE_API_KEY")
+groq_key = os.environ.get("GROQ_API_KEY")
 try:
     import streamlit as st
-    if not google_key and hasattr(st, "secrets"):
-        google_key = st.secrets.get("GOOGLE_API_KEY")
+    if hasattr(st, "secrets"):
+        google_key = google_key or st.secrets.get("GOOGLE_API_KEY")
+        groq_key = groq_key or st.secrets.get("GROQ_API_KEY")
 except ImportError:
     pass
 
-if not google_key:
-    raise ValueError("GOOGLE_API_KEY is completely missing! Please check Streamlit Secrets.")
-
-llm = ChatOpenAI(
-    model="gemini-1.5-flash",
-    api_key=google_key,
-    base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
-    temperature=0
-)
+if groq_key:
+    llm = ChatGroq(
+        model="llama3-8b-8192",
+        api_key=groq_key,
+        temperature=0
+    )
+elif google_key and google_key.startswith("AIza"):
+    llm = ChatOpenAI(
+        model="gemini-1.5-flash",
+        api_key=google_key,
+        base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
+        temperature=0
+    )
+elif google_key and google_key.startswith("AQ."):
+    raise ValueError("ERROR: The GOOGLE_API_KEY you provided (starts with 'AQ.') is a Google Cloud Vertex AI key! Vertex AI requires setting up a Google Cloud Project ID, Region, and Billing. Please get a standard AI Studio key (starts with 'AIza') or use a Groq API key instead.")
+else:
+    raise ValueError("Missing API Key! Please add either a GROQ_API_KEY or a standard GOOGLE_API_KEY (must start with 'AIza') to your Streamlit Secrets.")
 
 def build_search_agent():
     """Returns an agent equipped with web search capabilities."""
