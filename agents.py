@@ -1,4 +1,4 @@
-from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.prebuilt import create_react_agent
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
@@ -8,9 +8,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Google recently changed their API keys to start with "AQ." instead of "AIza". 
-# The native Google SDK has a bug where it thinks "AQ." is an OAuth token instead of an API key!
-# To bypass this bug, we use the OpenAI-compatible endpoint that Google provides.
+# Read API key safely from Streamlit Secrets or Environment
 google_key = os.environ.get("GOOGLE_API_KEY")
 try:
     import streamlit as st
@@ -19,10 +17,12 @@ try:
 except ImportError:
     pass
 
-llm = ChatOpenAI(
-    api_key=google_key,
-    base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
+if not google_key:
+    raise ValueError("GOOGLE_API_KEY is completely missing! Please check Streamlit Secrets.")
+
+llm = ChatGoogleGenerativeAI(
     model="gemini-1.5-flash",
+    google_api_key=google_key,
     temperature=0
 )
 
