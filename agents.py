@@ -1,4 +1,4 @@
-from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.prebuilt import create_react_agent
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
@@ -8,8 +8,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Initialize the LLM (ensure OPENAI_API_KEY is in your .env file)
-llm = ChatOpenAI(model="gpt-4o", temperature=0)
+# Initialize the LLM (ensure GOOGLE_API_KEY is in your .env file)
+llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0)
 
 def build_search_agent():
     """Returns an agent equipped with web search capabilities."""
