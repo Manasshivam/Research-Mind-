@@ -1,4 +1,4 @@
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_openai import ChatOpenAI
 from langgraph.prebuilt import create_react_agent
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
@@ -8,8 +8,23 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Initialize the LLM (ensure GOOGLE_API_KEY is in your .env file)
-llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0)
+# Google recently changed their API keys to start with "AQ." instead of "AIza". 
+# The native Google SDK has a bug where it thinks "AQ." is an OAuth token instead of an API key!
+# To bypass this bug, we use the OpenAI-compatible endpoint that Google provides.
+google_key = os.environ.get("GOOGLE_API_KEY")
+try:
+    import streamlit as st
+    if not google_key and hasattr(st, "secrets"):
+        google_key = st.secrets.get("GOOGLE_API_KEY")
+except ImportError:
+    pass
+
+llm = ChatOpenAI(
+    api_key=google_key,
+    base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
+    model="gemini-1.5-flash",
+    temperature=0
+)
 
 def build_search_agent():
     """Returns an agent equipped with web search capabilities."""

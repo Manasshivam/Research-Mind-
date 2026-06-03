@@ -1,6 +1,6 @@
 langchain
 langchain-core
-langchain-google-genai
+langchain-openai
 langchain-community
 langgraph
 langsmith
