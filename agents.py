@@ -14,8 +14,12 @@ groq_key = os.environ.get("GROQ_API_KEY")
 try:
     import streamlit as st
     if hasattr(st, "secrets"):
-        google_key = google_key or st.secrets.get("GOOGLE_API_KEY")
-        groq_key = groq_key or st.secrets.get("GROQ_API_KEY")
+        try:
+            google_key = google_key or st.secrets.get("GOOGLE_API_KEY")
+            groq_key = groq_key or st.secrets.get("GROQ_API_KEY")
+        except Exception:
+            # st.secrets throws an error locally if .streamlit/secrets.toml doesn't exist
+            pass
 except ImportError:
     pass
 
