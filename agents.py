@@ -25,7 +25,7 @@ except ImportError:
 
 if groq_key:
     llm = ChatOpenAI(
-        model="llama3-8b-8192",
+        model="llama-3.3-70b-versatile",
         api_key=groq_key,
         base_url="https://api.groq.com/openai/v1",
         temperature=0
